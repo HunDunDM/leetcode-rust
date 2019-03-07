@@ -106,7 +106,7 @@ def new_code_file(pid, problem):
     assert len(rust_code) == 1, f'problem #{pid} has no rust support yet'
     rust_code = rust_code[0]['defaultCode']
     # 判断文件是否已经存在
-    file_name = 'p{:04d}_{}'.format(pid, problem.title_slug)
+    file_name = 'p{:04d}_{}'.format(pid, problem.title_slug).replace('-', '_')
     file_path = f'./src/{file_name}.rs'
     assert not os.path.exists(file_path), f'problem #{pid} already initialized'
     # 按模板生成代码
