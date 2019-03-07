@@ -16,7 +16,9 @@
 import os
 import sys
 import json
+
 import requests
+from bs4 import BeautifulSoup
 
 TEMPLATE_FILE = './template.rs'
 PROBLEMS_URL = 'https://leetcode.com/api/problems/algorithms/'
@@ -86,7 +88,11 @@ def get_pid():
 
 
 def get_desc(problem):
-    return problem.content
+    return (BeautifulSoup(problem.content, features='html.parser')
+            .get_text()
+            .replace('\n\n', '\n')
+            .replace('\n', '\n * ')
+            )
 
 
 def parse_extra_use(code):
