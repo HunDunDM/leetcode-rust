@@ -76,6 +76,8 @@ def get_problem(pid):
     problems = json.loads(client.get(PROBLEMS_URL).text)
     for problem in problems['stat_status_pairs']:
         if problem['stat']['question_id'] == pid:
+            if problem['paid_only']:
+                return None
             detail = new_query(client, problem['stat']['question__title_slug'])
             return Problem(problem, detail)
 
@@ -96,11 +98,14 @@ def get_desc(problem):
 
 
 def parse_extra_use(code):
-    return ''
+    extra_use_line = ''
+    if 'pub struct ListNode' in code:
+        extra_use_line += '\nuse super::utils::linked_list::{ListNode, to_list};'
+    return extra_use_line
 
 
 def new_code_file(pid, problem):
-    assert problem is not None, f'problem #{pid} not found'
+    assert problem is not None, f'Error: failed to get problem #{pid} (may be paid-only or may not be exist).'
     # 提取rust默认代码
     rust_code = [detail for detail in problem.code_definition if detail['value'] == 'rust']
     assert len(rust_code) == 1, f'problem #{pid} has no rust support yet'
